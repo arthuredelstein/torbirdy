@@ -313,21 +313,14 @@ var TorBirdyOldPrefs = [
 ]
 
 // sanitizeDateHeaders()
-// Run this function to make sure that the Date header in a new message
-// is rounded down to the nearest minute.
+// Remove the date/time value from the Date header in outgoing mails, like this:
+// `Date:`
 function sanitizeDateHeaders() {
   // Import the jsmime module that is used to generate mail headers.
   let { jsmime } = Components.utils.import("resource:///modules/jsmime.jsm");
-  // Inject our own structured encoder to the default header emitter,
-  // to override the default Date encoder with a rounded-down version.
-  jsmime.headeremitter.addStructuredEncoder("Date", function (date) {
-    // Copy date
-    let roundedDate = new Date(date.getTime());
-    // Round down to the nearest minute.
-    roundedDate.setSeconds(0);
-    // Use the headeremitter's addDate function to format it properly.
-    // `this` magically refers to the headeremitter object.
-    this.addDate(roundedDate);
+  // Replace the default "structured encoder" for the Date header.
+  jsmime.headeremitter.addStructuredEncoder("Date", function () {
+    // Do nothing. Results in an empty Date header.
   });
 }
 
